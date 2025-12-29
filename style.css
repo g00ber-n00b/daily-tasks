@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-container {
+    background: #ffffff;
+    width: 350px;
+    max-height: 90vh;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#date {
+    text-align: center;
+    font-size: 20px;
+}
+
+#taskInput {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
+#addTaskBtn {
+    width: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+#taskList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task.completed span {
+    text-decoration: line-through;
+    color: gray;
+}
+
+#progress {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #555;
+}
