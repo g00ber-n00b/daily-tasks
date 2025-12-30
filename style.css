@@ -55,6 +55,15 @@ body {
     gap: 10px;
 }
 
+.delete-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #c00;
+}
+
 .task.completed span {
     text-decoration: line-through;
     color: gray;

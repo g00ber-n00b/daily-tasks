@@ -12,6 +12,18 @@ dateElement.textContent = today.toLocaleDateString("en-US", options);
 let tasks = [];
 const MAX_TASKS = 10;
 
+function saveTasks() {
+    localStorage.setItem("dailyTasks", JSON.stringify(tasks));
+}
+
+function loadTasks(){
+    const storedTasks = localStorage.getItem("dailyTasks");
+
+    if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+    }
+}
+
 function updateProgress() {
     const completedCount = tasks.filter(task => task.completed).length;
     progressText.textContent = `${completedCount} / ${MAX_TASKS} completed`;
@@ -34,15 +46,31 @@ function renderTasks() {
 
         checkbox.addEventListener("change", () => {
             tasks[index].completed = checkbox.checked;
+            saveTasks();
             renderTasks();
-            updateProgress();
         });
 
         const span = document.createElement("span");
         span.textContent = task.text;
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "❌";
+        deleteBtn.classList.add("delete-btn");
+
+        deleteBtn.addEventListener("click", () => {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+
+            if (tasks.length < MAX_TASKS) {
+                taskInput.disabled = false;
+                addTaskBtn.disabled = false;
+            }
+        });
 
         li.appendChild(checkbox);
         li.appendChild(span);
+        li.appendChild(deleteBtn);
         taskList.appendChild(li);
     });
 
@@ -60,6 +88,8 @@ function addTask() {
         completed: false
     });
 
+    saveTasks();
+
     taskInput.value = "";
     renderTasks();
 
@@ -76,3 +106,11 @@ taskInput.addEventListener("keydown", (e) => {
         addTask();
     }
 });
+
+loadTasks();
+renderTasks();
+
+if (tasks.length >= MAX_TASKS) {
+    taskInput.disabled = true;
+    addTaskBtn.disabled = true;
+}
