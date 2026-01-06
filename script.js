@@ -4,9 +4,11 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 const progressText = document.getElementById("progress");
 
+let editingIndex = null;
+
 const today = new Date();
 
-const options = { weekday: "long", day: "numeric", month: "short"};
+const options = { weekday: "long", day: "numeric", month: "short" };
 dateElement.textContent = today.toLocaleDateString("en-US", options);
 
 let tasks = [];
@@ -16,7 +18,7 @@ function saveTasks() {
     localStorage.setItem("dailyTasks", JSON.stringify(tasks));
 }
 
-function loadTasks(){
+function loadTasks() {
     const storedTasks = localStorage.getItem("dailyTasks");
 
     if (storedTasks) {
@@ -50,9 +52,46 @@ function renderTasks() {
             renderTasks();
         });
 
-        const span = document.createElement("span");
-        span.textContent = task.text;
-        
+        let contentElement;
+
+        if (editingIndex === index) {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = task.text;
+
+            contentElement = input;
+        } else {
+            const span = document.createElement("span");
+            span.textContent = task.text;
+
+            contentElement = span;
+        }
+
+
+        const editBtn = document.createElement("button");
+        editBtn.classList.add("edit-btn");
+
+        if (editingIndex === index) {
+            editBtn.textContent = "💾";
+
+            editBtn.addEventListener("click", () => {
+                const newText = contentElement.value.trim();
+                if (newText === "") return;
+
+                tasks[index].text = newText;
+                editingIndex = null;
+                saveTasks();
+                renderTasks();
+            });
+        } else {
+            editBtn.textContent = "✏️";
+
+            editBtn.addEventListener("click", () => {
+                editingIndex = index;
+                renderTasks();
+            });
+        }
+
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "❌";
         deleteBtn.classList.add("delete-btn");
@@ -69,7 +108,8 @@ function renderTasks() {
         });
 
         li.appendChild(checkbox);
-        li.appendChild(span);
+        li.appendChild(contentElement);
+        li.appendChild(editBtn);
         li.appendChild(deleteBtn);
         taskList.appendChild(li);
     });
