@@ -14,6 +14,8 @@ dateElement.textContent = today.toLocaleDateString("en-US", options);
 let tasks = [];
 const MAX_TASKS = 10;
 
+
+
 function saveTasks() {
     localStorage.setItem("dailyTasks", JSON.stringify(tasks));
 }
@@ -55,15 +57,27 @@ function renderTasks() {
         let contentElement;
 
         if (editingIndex === index) {
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = task.text;
+            const editInput = document.createElement("input");
+            editInput.type = "text";
+            editInput.value = task.text;
+            editInput.className = "edit-input";
 
-            contentElement = input;
+            editInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    saveEdit(task.id, editInput.value);
+                }
+                if (e.key === "Escape") {
+                    cancelEdit();
+                }
+            });
+            
+            li.appendChild(editInput);
+            contentElement = editInput;
         } else {
             const span = document.createElement("span");
+            span.classList.add("task-text");
             span.textContent = task.text;
-
+            li.appendChild(span);
             contentElement = span;
         }
 
@@ -72,10 +86,12 @@ function renderTasks() {
         editBtn.classList.add("edit-btn");
 
         if (editingIndex === index) {
-            editBtn.textContent = "💾";
+            editBtn.textContent = "Save";
+            
 
             editBtn.addEventListener("click", () => {
                 const newText = contentElement.value.trim();
+
                 if (newText === "") return;
 
                 tasks[index].text = newText;
@@ -84,7 +100,7 @@ function renderTasks() {
                 renderTasks();
             });
         } else {
-            editBtn.textContent = "✏️";
+            editBtn.textContent = "Edit";
 
             editBtn.addEventListener("click", () => {
                 editingIndex = index;
@@ -93,10 +109,25 @@ function renderTasks() {
         }
 
         const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "❌";
+        deleteBtn.textContent = "Delete";
         deleteBtn.classList.add("delete-btn");
 
+
+        if (task.confirmDelete) {
+            deleteBtn.textContent = "Confirm";
+        } else {
+            deleteBtn.textContent = "Delete";
+        }
+
+
         deleteBtn.addEventListener("click", () => {
+            if (!task.confirmDelete) {
+                task.confirmDelete = true;
+                renderTasks();
+                saveTasks();
+                return;
+            }
+
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
@@ -137,6 +168,9 @@ function addTask() {
         taskInput.disabled = true;
         addTaskBtn.disabled = true;
     }
+
+    taskInput.value = "";
+    taskInput.focus();
 }
 
 addTaskBtn.addEventListener("click", addTask);
@@ -154,3 +188,4 @@ if (tasks.length >= MAX_TASKS) {
     taskInput.disabled = true;
     addTaskBtn.disabled = true;
 }
+
